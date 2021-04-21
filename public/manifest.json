@@ -1,0 +1,13 @@
+{
+  "frontend/app.js": {
+    "file": "assets/app.443f10d6.js",
+    "src": "frontend/app.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor.0af4f608.js"
+    ]
+  },
+  "_vendor.0af4f608.js": {
+    "file": "assets/vendor.0af4f608.js"
+  }
+}
