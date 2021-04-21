@@ -3,7 +3,13 @@ import Router from 'https://jspm.dev/cloudworker-router'
 const router = new Router()
 
 const mediaPath = Deno.env.get('PUBLIC_ASSET_PATH')+'/public'
-const manifest = JSON.parse(await (await fetch(Deno.env.get('PUBLIC_ASSET_PATH')+'/public/manifest.json')).text())
+const manifest = JSON.parse(await (await fetch(mediaPath + '/manifest.json')).text())
+
+const manifestEntries = []
+
+for (const [key, value] of Object.entries(manifest)) {
+  manifestEntries.push(value.file)
+}
 
 router.get('/', (ctx) => {
   ctx.body = `
@@ -18,7 +24,7 @@ router.get('/', (ctx) => {
           <script type="module" src="http://localhost:3000/@vite/client"></script>
           <script type="module" src="http://localhost:3000/frontend/app.js"></script>
         ` : `
-          <script type="module" src="${ mediaPath }/${ manifest['frontend/app.js']['file'] }"></script>
+          <script type="module" src="/${ manifest['frontend/app.js']['file'] }"></script>
         `
       }
       <title>Deno Deploy Todos</title>
@@ -31,6 +37,16 @@ router.get('/', (ctx) => {
   `
 
   ctx.status = 200
+})
+
+router.get('/:wildcard*', async (ctx) => {
+  if (manifestEntries.includes(ctx.params.wildcard)) {
+    ctx.body = await (await fetch(mediaPath + '/' + ctx.params.wildcard)).text()
+    ctx.response.headers = {
+      'content-type': 'application/javascript'
+    }
+    ctx.status = 200
+  }
 })
 
 addEventListener("fetch", (event) => {
