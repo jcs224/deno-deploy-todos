@@ -35,7 +35,9 @@ router.get('/', (ctx) => {
     </body>
   </html>
   `
-
+  ctx.response.headers = {
+    'content-type': 'text/html'
+  }
   ctx.status = 200
 })
 
